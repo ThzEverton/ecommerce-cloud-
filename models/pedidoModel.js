@@ -44,6 +44,7 @@ class PedidoModel {
         produto.produtoQuantidade = produto.produtoQuantidade - produtoQuantidade;
 
         await produto.gravar();
+        return produto;
     }
 
     async gravar() {

@@ -71,7 +71,7 @@
                         <div class="col mb-5">
                             <div class="card h-100">
                                 <!-- Product image-->
-                                <img class="card-img-top" src="<%= global.PRODUTO_IMG_CAMINHO + value.produtoImagem %>" alt="Imagem do produto" />
+                                <img class="card-img-top" src="<%= value.produtoImagem %>" alt="Imagem do produto" />
                                 <!-- Product details-->
                                 <div class="card-body p-4">
                                     <div class="text-center">
@@ -113,6 +113,10 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" id="corpoModal">
+                            <div class="mb-3">
+                                <label for="inputEmailPedido" class="form-label">E-mail para receber o pedido</label>
+                                <input type="email" class="form-control" id="inputEmailPedido" placeholder="cliente@email.com">
+                            </div>
                             <div class="table-responsive">
                                 <table style="width:100%">
                                     <thead>

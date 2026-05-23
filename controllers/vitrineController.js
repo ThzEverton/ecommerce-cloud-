@@ -1,6 +1,7 @@
 const PedidoItemModel = require("../models/pedidoItemModel");
 const PedidoModel = require("../models/pedidoModel");
 const ProdutoModel = require("../models/produtoModel");
+const queueService = require("../services/queueService");
 
 class VitrineController {
 
@@ -15,14 +16,20 @@ class VitrineController {
         var ok = false;
         var msg = "";
         if(req.body != null && req.body != ""){
+            const email = req.body.email;
+            const listaPedido = Array.isArray(req.body) ? req.body : req.body.itens;
 
-            if(req.body.length > 0) {               
+            if(email == null || email == "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) == false) {
+                msg = "Informe um e-mail valido para receber o pedido.";
+            }
+            else if(listaPedido != null && listaPedido.length > 0) {
                 let pedido = new PedidoModel();
-                let listaPedido = req.body;
                 let listaErros = await pedido.validarPedido(listaPedido);
                 if(listaErros.length == 0){
                     await pedido.gravar();
                     if(pedido.pedidoId > 0){
+                        const itensEmail = [];
+                        let total = 0;
                         for(let i = 0; i<listaPedido.length; i++){
                             let pedidoItem = new PedidoItemModel();
                             pedidoItem.pedidoId = pedido.pedidoId;
@@ -31,8 +38,25 @@ class VitrineController {
 
                             ok = await pedidoItem.gravar();
                             if(ok){
-                                pedido.debitarQuantidade(pedidoItem.produtoId, pedidoItem.pedidoQuantidade);
+                                const produto = await pedido.debitarQuantidade(pedidoItem.produtoId, pedidoItem.pedidoQuantidade);
+                                const valor = Number(produto.produtoPreco || 0);
+                                const quantidade = Number(pedidoItem.pedidoQuantidade || 0);
+                                total += valor * quantidade;
+                                itensEmail.push({
+                                    nome: produto.produtoNome,
+                                    quantidade: quantidade,
+                                    valor: valor
+                                });
                             }
+                        }
+
+                        if(ok) {
+                            await queueService.publishOrderEmailEvent({
+                                pedidoId: pedido.pedidoId,
+                                email: email,
+                                itens: itensEmail,
+                                total: total
+                            });
                         }
                     }
                     else{
