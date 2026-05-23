@@ -50,7 +50,7 @@ class ProdutoController {
     }
     async cadastrarProduto(req, res){
         var ok = true;
-        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.#arquivoImagemValido(req.file) && req.body.preco != '' && req.body.preco > '0' ) {
+        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.arquivoImagemValido(req.file) && req.body.preco != '' && req.body.preco > '0' ) {
             
             const imagemUrl = await objectStorageService.uploadProductImage(req.file);
             let produto = new ProdutoModel(0, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
@@ -80,7 +80,7 @@ class ProdutoController {
 
     async alterarProduto(req, res) {
         var ok = true;
-        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.#arquivoImagemValido(req.file)  && req.body.preco != '' && req.body.preco > '0' ) {
+        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.arquivoImagemValido(req.file)  && req.body.preco != '' && req.body.preco > '0' ) {
 
             const imagemUrl = await objectStorageService.uploadProductImage(req.file);
             let produto = new ProdutoModel(req.body.id, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
@@ -108,7 +108,7 @@ class ProdutoController {
         res.render('produto/cadastro', { listaMarcas: listaMarcas, listaCategorias: listaCategorias });
     }
 
-    #arquivoImagemValido(file) {
+    arquivoImagemValido(file) {
         if(file == null || file.originalname == null) {
             return false;
         }

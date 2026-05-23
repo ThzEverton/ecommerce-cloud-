@@ -83,7 +83,7 @@ class ProdutoModel {
             if(valorPrd == null || valorPrd == "")
                 valorPrd = "0.00";
 
-            let prdImagem = this.#resolverImagem(row["prd_imagem"]);
+            let prdImagem = this.resolverImagem(row["prd_imagem"]);
             produto = new ProdutoModel(row['prd_id'], 
             row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
             row['cat_id'], row['mar_id'], row["cat_nome"], row["mar_nome"], 
@@ -106,7 +106,7 @@ class ProdutoModel {
             for(let i=0; i<rows.length; i++){
                 var row = rows[i];
 
-                let prdImagem = this.#resolverImagem(row["prd_imagem"]);
+                let prdImagem = this.resolverImagem(row["prd_imagem"]);
 
                 listaRetorno.push(new ProdutoModel(row['prd_id'], 
                 row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
@@ -117,7 +117,7 @@ class ProdutoModel {
         return listaRetorno;
     }
 
-    #resolverImagem(prdImagem) {
+    resolverImagem(prdImagem) {
         if(prdImagem != null && prdImagem != "") {
             if(prdImagem.startsWith("http://") || prdImagem.startsWith("https://")) {
                 return prdImagem;
