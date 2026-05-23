@@ -50,18 +50,26 @@ class ProdutoController {
     }
     async cadastrarProduto(req, res){
         var ok = true;
+        var msg = "";
         if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.arquivoImagemValido(req.file) && req.body.preco != '' && req.body.preco > '0' ) {
-            
-            const imagemUrl = await objectStorageService.uploadProductImage(req.file);
-            let produto = new ProdutoModel(0, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
+            try {
+                const imagemUrl = await objectStorageService.uploadProductImage(req.file);
+                let produto = new ProdutoModel(0, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
 
-            ok = await produto.gravar();
+                ok = await produto.gravar();
+            }
+            catch(error) {
+                ok = false;
+                msg = this.mensagemErroImagem(error);
+                console.error("Erro ao enviar imagem do produto:", error);
+            }
         }
         else{
             ok = false;
+            msg = "Preencha todos os campos e selecione uma imagem .jpg, .jpeg ou .png.";
         }
 
-        res.send({ ok: ok })
+        res.send({ ok: ok, msg: msg })
     }
 
     async alterarView(req, res){
@@ -80,18 +88,26 @@ class ProdutoController {
 
     async alterarProduto(req, res) {
         var ok = true;
+        var msg = "";
         if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.arquivoImagemValido(req.file)  && req.body.preco != '' && req.body.preco > '0' ) {
+            try {
+                const imagemUrl = await objectStorageService.uploadProductImage(req.file);
+                let produto = new ProdutoModel(req.body.id, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
 
-            const imagemUrl = await objectStorageService.uploadProductImage(req.file);
-            let produto = new ProdutoModel(req.body.id, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
-            
-            ok = await produto.gravar();
+                ok = await produto.gravar();
+            }
+            catch(error) {
+                ok = false;
+                msg = this.mensagemErroImagem(error);
+                console.error("Erro ao enviar imagem do produto:", error);
+            }
         }
         else{
             ok = false;
+            msg = "Preencha todos os campos e selecione uma imagem .jpg, .jpeg ou .png.";
         }
 
-        res.send({ ok: ok })
+        res.send({ ok: ok, msg: msg })
     }
 
     async cadastroView(req, res) {
@@ -116,6 +132,14 @@ class ProdutoController {
         const nome = file.originalname.toLowerCase();
         return (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png")) &&
             (file.mimetype == "image/jpeg" || file.mimetype == "image/png");
+    }
+
+    mensagemErroImagem(error) {
+        if(error != null && error.message != null && error.message.includes("bucket")) {
+            return "Bucket da OCI nao encontrado ou sem permissao de acesso.";
+        }
+
+        return "Erro ao enviar a imagem do produto.";
     }
 }
 

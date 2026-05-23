@@ -72,7 +72,7 @@ function alterarProduto() {
                     alert("Produto alterado!");
                 }
                 else{
-                    alert("Erro ao alterar produto");
+                    alert(r.msg || "Erro ao alterar produto");
                 }
             })
             .catch(e => {

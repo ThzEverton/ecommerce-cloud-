@@ -72,7 +72,7 @@ function gravarProduto() {
                     alert("Produto cadastrado!");
                 }
                 else{
-                    alert("Erro ao cadastrar produto");
+                    alert(r.msg || "Erro ao cadastrar produto");
                 }
             })
             .catch(e => {
