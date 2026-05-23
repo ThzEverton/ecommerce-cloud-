@@ -1,7 +1,7 @@
 const CategoriaModel = require("../models/categoriaModel");
 const MarcaModel = require("../models/marcaModel");
 const ProdutoModel = require("../models/produtoModel");
-const fs = require('fs');
+const objectStorageService = require("../services/objectStorageService");
 
 class ProdutoController {
 
@@ -50,9 +50,10 @@ class ProdutoController {
     }
     async cadastrarProduto(req, res){
         var ok = true;
-        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && (req.file.filename.includes(".jpg") || req.file.filename.includes(".png")) && req.body.preco != '' && req.body.preco > '0' ) {
+        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.#arquivoImagemValido(req.file) && req.body.preco != '' && req.body.preco > '0' ) {
             
-            let produto = new ProdutoModel(0, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", req.file.filename, req.body.preco);
+            const imagemUrl = await objectStorageService.uploadProductImage(req.file);
+            let produto = new ProdutoModel(0, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
 
             ok = await produto.gravar();
         }
@@ -79,18 +80,10 @@ class ProdutoController {
 
     async alterarProduto(req, res) {
         var ok = true;
-        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && (req.file.filename.includes(".jpg") || req.file.filename.includes(".png"))  && req.body.preco != '' && req.body.preco > '0' ) {
+        if(req.body.codigo != "" && req.body.nome != "" && req.body.quantidade != "" && req.body.quantidade  != '0' && req.body.marca != '0' && req.body.categoria  != '0' && req.file != null && this.#arquivoImagemValido(req.file)  && req.body.preco != '' && req.body.preco > '0' ) {
 
-            let produto = new ProdutoModel(req.body.id, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", req.file.filename, req.body.preco);
-            
-            let produtoOld = await produto.buscarProduto(req.body.id);
-
-            if(produtoOld.produtoImagem != null && produtoOld.produtoImagem != "") {
-
-                if(fs.existsSync(global.RAIZ_PROJETO + "/public" + global.PRODUTO_IMG_CAMINHO + produtoOld.produtoImagem)){
-                    fs.unlinkSync(global.RAIZ_PROJETO + "/public" + global.PRODUTO_IMG_CAMINHO + produtoOld.produtoImagem)   
-                }     
-            }
+            const imagemUrl = await objectStorageService.uploadProductImage(req.file);
+            let produto = new ProdutoModel(req.body.id, req.body.codigo, req.body.nome, req.body.quantidade, req.body.categoria, req.body.marca, "", "", imagemUrl, req.body.preco);
             
             ok = await produto.gravar();
         }
@@ -113,6 +106,16 @@ class ProdutoController {
         listaCategorias = await categoria.listarCategorias();
 
         res.render('produto/cadastro', { listaMarcas: listaMarcas, listaCategorias: listaCategorias });
+    }
+
+    #arquivoImagemValido(file) {
+        if(file == null || file.originalname == null) {
+            return false;
+        }
+
+        const nome = file.originalname.toLowerCase();
+        return (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png")) &&
+            (file.mimetype == "image/jpeg" || file.mimetype == "image/png");
     }
 }
 

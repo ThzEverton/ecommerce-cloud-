@@ -83,18 +83,7 @@ class ProdutoModel {
             if(valorPrd == null || valorPrd == "")
                 valorPrd = "0.00";
 
-            let prdImagem = row["prd_imagem"];
-            if(prdImagem != null && prdImagem != ""){
-                //checar se existe
-                if(fs.existsSync(global.RAIZ_PROJETO + "/public" + global.PRODUTO_IMG_CAMINHO + prdImagem) == false) {
-                    prdImagem = "sem-imagem.png";
-                }
-            }
-            else {
-                prdImagem = "sem-imagem.png"
-            }
-
-            prdImagem = global.PRODUTO_IMG_CAMINHO + prdImagem;
+            let prdImagem = this.#resolverImagem(row["prd_imagem"]);
             produto = new ProdutoModel(row['prd_id'], 
             row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
             row['cat_id'], row['mar_id'], row["cat_nome"], row["mar_nome"], 
@@ -117,16 +106,7 @@ class ProdutoModel {
             for(let i=0; i<rows.length; i++){
                 var row = rows[i];
 
-                let prdImagem = row["prd_imagem"];
-                if(prdImagem != null && prdImagem != ""){
-                    //checar se existe
-                    if(fs.existsSync(global.RAIZ_PROJETO + "/public" + global.PRODUTO_IMG_CAMINHO + prdImagem) == false) {
-                        prdImagem = "sem-imagem.png";
-                    }
-                }
-                else {
-                    prdImagem = "sem-imagem.png"
-                }
+                let prdImagem = this.#resolverImagem(row["prd_imagem"]);
 
                 listaRetorno.push(new ProdutoModel(row['prd_id'], 
                 row['prd_cod'], row['prd_nome'], row['prd_quantidade'], 
@@ -135,6 +115,20 @@ class ProdutoModel {
         }
 
         return listaRetorno;
+    }
+
+    #resolverImagem(prdImagem) {
+        if(prdImagem != null && prdImagem != "") {
+            if(prdImagem.startsWith("http://") || prdImagem.startsWith("https://")) {
+                return prdImagem;
+            }
+
+            if(fs.existsSync(global.RAIZ_PROJETO + "/public" + global.PRODUTO_IMG_CAMINHO + prdImagem)) {
+                return global.PRODUTO_IMG_CAMINHO + prdImagem;
+            }
+        }
+
+        return global.PRODUTO_IMG_CAMINHO + "sem-imagem.png";
     }
 
 }

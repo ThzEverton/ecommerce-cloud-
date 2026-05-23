@@ -16,16 +16,7 @@ class ProdutoRoute {
     constructor() {
         this.#router = express.Router();
 
-        let storage = multer.diskStorage({
-            destination: function(req, res, cb) {
-                cb(null, 'public/img/Produtos');
-            },
-            filename: function(req, file, cb) {
-                var ext = file.originalname.split(".")[1];
-                cb(null, Date.now().toString() + "." + ext);
-            }
-        })
-
+        let storage = multer.memoryStorage();
         let upload = multer({storage});
         let auth = new Autenticacao();
         let ctrl = new ProdutoController
