@@ -20,13 +20,17 @@ class ProdutoRoute {
         let upload = multer({storage});
         let auth = new Autenticacao();
         let ctrl = new ProdutoController
-        this.#router.get('/', auth.usuarioIsAdmin, ctrl.listarView);
-        this.#router.get('/cadastro', auth.usuarioIsAdmin, ctrl.cadastroView);
-        this.#router.post("/cadastro", auth.usuarioIsAdmin, upload.single("inputImagem"), ctrl.cadastrarProduto);
-        this.#router.post("/excluir", auth.usuarioIsAdmin, ctrl.excluirProduto);
-        this.#router.get("/alterar/:id", auth.usuarioIsAdmin, ctrl.alterarView);
-        this.#router.post("/alterar", auth.usuarioIsAdmin, upload.single("inputImagem"),ctrl.alterarProduto);
-        this.#router.post("/buscar", ctrl.buscaProduto);
+        const acao = (metodo) => (req, res, next) => {
+            Promise.resolve(metodo.call(ctrl, req, res, next)).catch(next);
+        };
+
+        this.#router.get('/', auth.usuarioIsAdmin, acao(ctrl.listarView));
+        this.#router.get('/cadastro', auth.usuarioIsAdmin, acao(ctrl.cadastroView));
+        this.#router.post("/cadastro", auth.usuarioIsAdmin, upload.single("inputImagem"), acao(ctrl.cadastrarProduto));
+        this.#router.post("/excluir", auth.usuarioIsAdmin, acao(ctrl.excluirProduto));
+        this.#router.get("/alterar/:id", auth.usuarioIsAdmin, acao(ctrl.alterarView));
+        this.#router.post("/alterar", auth.usuarioIsAdmin, upload.single("inputImagem"), acao(ctrl.alterarProduto));
+        this.#router.post("/buscar", acao(ctrl.buscaProduto));
     }
 }
 
