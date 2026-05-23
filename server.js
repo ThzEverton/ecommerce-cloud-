@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 //importando os packages instalados
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
@@ -61,6 +63,7 @@ global.PRODUTO_IMG_CAMINHO = "/img/Produtos/";
 global.RAIZ_PROJETO = __dirname;
 
 //ponto de inicio do nosso servidor web
-const server = app.listen('5000', function() {
-    console.log('Servidor web iniciado');
+const port = process.env.PORT || 3000;
+const server = app.listen(port, function() {
+    console.log(`Servidor web iniciado na porta ${port}`);
 });

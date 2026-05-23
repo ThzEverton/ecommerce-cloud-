@@ -10,10 +10,14 @@ class Database {
     constructor() {
 
         this.#conexao = mysql.createPool({
-            host: '140.238.185.50',
-            database: 'DB_106888',
-            user: '106888',
-            password: '106888',
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT || 3306,
+            database: process.env.DB_DATABASE,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            waitForConnections: true,
+            connectionLimit: Number(process.env.DB_CONNECTION_LIMIT || 10),
+            queueLimit: 0
         });
         
     }
