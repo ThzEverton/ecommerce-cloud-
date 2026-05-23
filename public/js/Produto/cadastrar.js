@@ -9,17 +9,26 @@ document.addEventListener("DOMContentLoaded", function(){
     inputImagem.addEventListener("change", exibirImagem);
 })
 
+function imagemValida(file) {
+    if(file == null || file.name == null) {
+        return false;
+    }
+
+    var nome = file.name.toLowerCase();
+    return nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png");
+}
+
 function exibirImagem() {
-    
+
     var inputValue = document.getElementById("inputImagem").files[0];
 
-    if(inputValue.name.includes(".jpg") || inputValue.name.includes(".png")) {
+    if(imagemValida(inputValue)) {
         var imgInput = document.getElementById("imgInput");
         imgInput.src = URL.createObjectURL(inputValue);
         imgInput.style["display"] = "block";
     }
     else{
-        alert("Formato inválido (Apenas .jpg e .png)");
+        alert("Formato invalido (Apenas .jpg, .jpeg e .png)");
     }
 
 }
@@ -36,27 +45,16 @@ function gravarProduto() {
 
     var inputPreco = document.getElementById("inputPreco");
 
-    //if de validação básica
     if(inputCodigo.value != "" && inputNome.value != "" && inputQtde.value != "" && inputQtde.value != '0' && selMarca.value != '0' && selCategoria.value != '0' && inputImagem.files != null && inputImagem.files.length > 0 && inputPreco.value != "" && inputPreco.value > '0') {
 
 
         var inputValue = inputImagem.files[0];
-        if(inputValue.name.includes(".jpg") || inputValue.name.includes(".png")) {
-            
-            /*var data = {
-                codigo: inputCodigo.value,
-                nome: inputNome.value,
-                quantidade: inputQtde.value,
-                marca: selMarca.value,
-                categoria: selCategoria.value
-            }*/
-
-            //para enviar arquivos, utilize FormData
+        if(imagemValida(inputValue)) {
 
             var formData = new FormData();
             formData.append("codigo", inputCodigo.value);
             formData.append("nome", inputNome.value);
-            formData.append("quantidade", inputQtde.value);         
+            formData.append("quantidade", inputQtde.value);
             formData.append("marca", selMarca.value);
             formData.append("categoria", selCategoria.value);
             formData.append("inputImagem", inputValue);
@@ -82,7 +80,7 @@ function gravarProduto() {
             })
         }
         else{
-            alert("Formato de arquivo inválido!")
+            alert("Formato de arquivo invalido!")
         }
     }
     else{
