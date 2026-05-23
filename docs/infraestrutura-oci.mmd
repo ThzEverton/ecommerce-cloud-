@@ -1,0 +1,26 @@
+flowchart TB
+    user[Usuario / Navegador] --> internet[Internet]
+    internet --> lb[OCI Load Balancer]
+
+    subgraph vcn[VCN / Rede OCI]
+        subgraph publicSubnet[Subrede publica]
+            lb --> vm[VM OCI Compute<br/>Ubuntu + Nginx + PM2]
+            vm --> nginx[Nginx<br/>porta 80]
+            nginx --> app[Node.js / Express / EJS<br/>porta 3000]
+            worker[Worker emailConsumer.js<br/>PM2]
+        end
+
+        subgraph privateSubnet[Subrede privada]
+            mysql[(OCI MySQL Database Service<br/>bancoaula - 10.0.0.143:3306)]
+        end
+    end
+
+    app --> mysql
+    app --> bucket[OCI Object Storage Bucket<br/>bucket-aula<br/>imagens publicas]
+    app --> queue[OCI Queue<br/>eventos de e-mail]
+    queue --> worker
+    worker --> email[OCI Email Delivery<br/>SMTP Sao Paulo]
+    email --> customer[Cliente recebe e-mail do pedido]
+
+    classDef oci fill:#f6f8fb,stroke:#5b6b7a,color:#111;
+    class vcn,publicSubnet,privateSubnet,lb,vm,nginx,app,worker,mysql,bucket,queue,email oci;
