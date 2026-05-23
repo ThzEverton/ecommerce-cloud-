@@ -51,12 +51,18 @@ class VitrineController {
                         }
 
                         if(ok) {
-                            await queueService.publishOrderEmailEvent({
-                                pedidoId: pedido.pedidoId,
-                                email: email,
-                                itens: itensEmail,
-                                total: total
-                            });
+                            try {
+                                await queueService.publishOrderEmailEvent({
+                                    pedidoId: pedido.pedidoId,
+                                    email: email,
+                                    itens: itensEmail,
+                                    total: total
+                                });
+                            }
+                            catch(error) {
+                                console.error("Erro ao publicar evento de e-mail do pedido:", error);
+                                msg = "Pedido confirmado, mas nao foi possivel enviar o e-mail de confirmacao.";
+                            }
                         }
                     }
                     else{

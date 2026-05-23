@@ -126,7 +126,7 @@ async function gravarPedido() {
     const dados = await resposta.json();
 
     if(dados.ok) {
-        alert("Pedido confirmado! Voce recebera os detalhes por e-mail.");
+        alert(dados.msg || "Pedido confirmado! Voce recebera os detalhes por e-mail.");
         carrinho = [];
         renderizarCarrinho();
     }

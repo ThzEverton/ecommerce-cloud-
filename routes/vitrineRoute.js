@@ -18,8 +18,12 @@ class VitrineRoute {
 
         let ctrl = new VitrineController();
 
-        this.#router.get('/', ctrl.listarProdutosView);
-        this.#router.post('/gravar-pedido', ctrl.gravarPedido);
+        const acao = (metodo) => (req, res, next) => {
+            Promise.resolve(metodo.call(ctrl, req, res, next)).catch(next);
+        };
+
+        this.#router.get('/', acao(ctrl.listarProdutosView));
+        this.#router.post('/gravar-pedido', acao(ctrl.gravarPedido));
     }
 }
 
