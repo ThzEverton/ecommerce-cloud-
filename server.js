@@ -16,6 +16,8 @@ const PedidoRoute = require('./routes/pedidoRoute');
 
 const app = express();
 
+app.set('trust proxy', true);
+
 //configurando a nossa pasta public como o nosso repositorio de arquivos estáticos (css, js, imagens)
 app.use(express.static(__dirname + "/public"))
 app.use(cookieParser());
@@ -30,6 +32,13 @@ app.use(express.json());
 //configuração da nossa página de layout
 app.set('layout', './layout');
 app.use(expressLayouts);
+
+app.get('/health', function(req, res) {
+    res.status(200).json({
+        status: 'ok',
+        service: 'ecommerce-cloud'
+    });
+});
 
 //definindo as rotas que o nosso sistema vai reconhecer através da url do navegador
 //rotas publicas
