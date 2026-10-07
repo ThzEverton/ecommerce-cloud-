@@ -20,5 +20,6 @@
   },
   "name": "ecommerce-cloud-oci",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "description": "E-commerce full stack implantado em Oracle Cloud Infrastructure."
 }
