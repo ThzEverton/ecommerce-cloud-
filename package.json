@@ -17,5 +17,8 @@
     "oci-common": "^2.132.0",
     "oci-objectstorage": "^2.132.0",
     "oci-queue": "^2.132.0"
-  }
+  },
+  "name": "ecommerce-cloud-oci",
+  "version": "1.0.0",
+  "private": true
 }
